@@ -1,38 +1,43 @@
 package ru.netology.manager;
 
+import lombok.Data;
 import ru.netology.domain.PurchaseItem;
-import ru.netology.repository.CartRepository;
 
+@Data
 public class CartManager {
-  private CartRepository repository;
+    private int numberLast = 10;
+    private PurchaseItem[] items = new PurchaseItem[0];
 
-  public CartManager(CartRepository repository) {
-    this.repository = repository;
-  }
-
-  public void add(PurchaseItem item) {
-    repository.save(item);
-  }
-
-  public PurchaseItem[] getAll() {
-    PurchaseItem[] items = repository.findAll();
-    PurchaseItem[] result = new PurchaseItem[items.length];
-    for (int i = 0; i < result.length; i++) {
-      int index = items.length - i - 1;
-      result[i] = items[index];
+    public void add(PurchaseItem item) {
+        int length = items.length + 1;
+        PurchaseItem[] tmp = new PurchaseItem[length];
+        System.arraycopy(items, 0, tmp, 0, items.length);
+        int lastIndex = tmp.length - 1;
+        tmp[lastIndex] = item;
+        items = tmp;
     }
-    return result;
-  }
 
-  public void removeById(int id) {
-    repository.removeById(id);
-  }
+    public CartManager(int numberLast) {
+        if (numberLast > 0) {
+            this.numberLast = numberLast;
+        }
 
-  public int sum() {
-    int result = 0;
-    for (PurchaseItem item : getAll()) {
-      result = result + item.getProductPrice() * item.getCount();
     }
-    return result;
-  }
+
+    public PurchaseItem[] numLastW() {
+        int askedFilms = items.length;   //количество фильмов в ленте
+
+        if (numberLast < items.length) {
+            askedFilms = numberLast;
+        }
+
+        PurchaseItem[] result = new PurchaseItem[askedFilms];
+        for (int i = 0; i < result.length; i++) {
+            int index = items.length - i - 1;
+            result[i] = items[index];
+        }
+        return result;
+    }
+
+
 }
